@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AION 2 守護力配點器</title>
+  <meta name="description" content="AION 2 global Daevanion planner: 8 classes, 5 boards, 4,296 real nodes, cheapest-path routing and target solving.">
+  <link rel="icon" href="assets/img/emblem.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/board.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body data-title-en="AION 2 Daevanion Planner" data-title-zh="AION 2 守護力配點器">
+
+<header class="app-bar">
+  <a class="brand" href="index.html">
+    <img src="assets/img/emblem.svg" alt="" width="28" height="28">
+    <span class="brand__text"><b>AION 2</b><i data-en="Daevanion planner" data-zh="守護力配點器">Daevanion planner</i></span>
+  </a>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang-btn="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang-btn="zh" aria-pressed="false">繁</button>
+    <button type="button" data-lang-btn="cn" aria-pressed="false">简</button>
+  </div>
+</header>
+
+<main class="app" id="explorer-root">
+
+  <div class="toolbar">
+    <div class="chip-row" id="cls-row" role="group" aria-label="Class"></div>
+    <div class="toolbar-row">
+      <div class="chip-row" id="board-row" role="group" aria-label="Board"></div>
+      <div class="seg" role="group" aria-label="Mode">
+        <button type="button" class="seg__btn" data-mode="plan" aria-pressed="true" data-en="Plan" data-zh="配點">Plan</button>
+        <button type="button" class="seg__btn" data-mode="target" aria-pressed="false" data-en="Targets" data-zh="需求">Targets</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <section class="board-card">
+      <div class="board-shell">
+        <div class="board-grid" id="board-grid" role="group" aria-label="Daevanion board nodes"></div>
+      </div>
+      <div class="grade-legend" id="grade-legend"></div>
+    </section>
+
+    <aside class="side">
+      <div class="node-card" id="node-info" aria-live="polite"></div>
+
+      <div class="node-card">
+        <div class="budget__head">
+          <span data-en="Crystal pool" data-zh="結晶池">Crystal pool</span>
+          <strong id="budget-text">0 / 840</strong>
+        </div>
+        <div class="budget__track"><i id="budget-bar"></i></div>
+        <div class="budget-row">
+          <input id="budget-range" type="range" min="0" max="840" step="1" value="840" aria-label="Crystal cap">
+          <input id="budget" type="number" min="0" max="840" step="1" value="840" aria-label="Crystal cap value">
+        </div>
+        <p class="budget-hint" id="budget-hint">0 – 840</p>
+      </div>
+
+      <div class="node-card">
+        <h3 class="small-caps">
+          <span data-en="Special nodes" data-zh="特殊節點">Special nodes</span>
+          <b class="cnt" id="cnt-unique">0/0</b>
+        </h3>
+        <div class="req-list" id="list-unique"></div>
+      </div>
+
+      <div class="node-card">
+        <h3 class="small-caps">
+          <span data-en="Active skills" data-zh="主動節點">Active skills</span>
+          <b class="cnt" id="cnt-active">0/0</b>
+        </h3>
+        <div class="req-list" id="list-active"></div>
+      </div>
+
+      <div class="node-card">
+        <h3 class="small-caps">
+          <span data-en="Passive skills" data-zh="被動節點">Passive skills</span>
+          <b class="cnt" id="cnt-passive">0/0</b>
+        </h3>
+        <div class="req-list" id="list-passive"></div>
+      </div>
+
+      <div class="node-card">
+        <h3 class="small-caps" data-en="General priority" data-zh="一般節點優先度">General priority</h3>
+        <div class="pri-list" id="pri-list"></div>
+        <div class="pri-presets" id="pri-presets">
+          <button type="button" class="btn-mini" data-preset="atkcrit" data-en="Attack + Crit only" data-zh="只點 攻擊＋暴擊">Attack + Crit only</button>
+          <button type="button" class="btn-mini" data-preset="all" data-en="Tick all" data-zh="全選">Tick all</button>
+        </div>
+        <label class="auto-check" style="margin-top:8px">
+          <input type="checkbox" id="pri-strict">
+          <span data-en="Only the ticked stats (no skills / specials)" data-zh="只點勾選屬性（不補技能／特殊）">Only the ticked stats (no skills / specials)</span>
+        </label>
+      </div>
+
+      <div class="node-card" id="board-summary"></div>
+
+      <div class="side-btns">
+        <button type="button" class="btn-mini btn-mini--gold" id="auto-board" data-en="Auto build" data-zh="自動配置">Auto build</button>
+        <button type="button" class="btn-mini" id="auto-pve" data-en="All four boards" data-zh="四盤自動">All four boards</button>
+        <button type="button" class="btn-mini" id="reset-board" data-en="Reset" data-zh="重置">Reset</button>
+        <button type="button" class="btn-mini" id="share-plan" data-en="Copy link" data-zh="複製連結">Copy link</button>
+      </div>
+    </aside>
+
+    <div class="node-card total-card" id="total-summary"></div>
+  </div>
+
+  <p class="app-foot">
+    <span data-en="Data: aion2.tools /db/daevanion (Global region), read 17 Nov 2026. Unofficial fan tool." data-zh="資料：aion2.tools /db/daevanion（Global 區域），2026/11/17 讀取。非官方粉絲工具。">Data: aion2.tools /db/daevanion (Global region), read 17 Nov 2026. Unofficial fan tool.</span>
+  </p>
+
+  <div class="plan-toast" id="plan-toast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="assets/js/data/names.js"></script>
+<script src="assets/js/data/s2t.js"></script>
+<script src="assets/js/solver.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/board.js"></script>
+</body>
+</html>
